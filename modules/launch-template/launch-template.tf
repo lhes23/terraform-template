@@ -1,4 +1,4 @@
-resource "aws_launch_template" "lt" {
+resource "aws_launch_template" "launch-template" {
   name          = var.lt_name
   image_id      = var.image_id
   instance_type = var.instance_type
@@ -15,9 +15,13 @@ resource "aws_launch_template" "lt" {
     resource_type = "instance"
     tags = var.instance_tags
   }
+
+  tags = {
+    Name = var.lt_name
+  }
 }
 
 output "launch_template_id" {
-  value = aws_launch_template.lt.id
+  value = aws_launch_template.launch-template.id
   description = "The ID of the created launch template"
 }
