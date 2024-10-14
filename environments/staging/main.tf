@@ -19,16 +19,6 @@ data "terraform_remote_state" "live" {
   }
 }
 
-module "vpc_peering" {
-  source                 = "../../modules/vpc-peering"
-  staging_vpc_id         = module.staging_vpc.id
-  live_vpc_id            = data.terraform_remote_state.live.outputs.live_vpc_id
-  staging_route_table_id = module.staging_vpc.route_table_id
-  live_route_table_id    = data.terraform_remote_state.live.outputs.live_route_table_id
-  staging_vpc_cidr       = module.staging_vpc.cidr_block
-  live_vpc_cidr          = data.terraform_remote_state.live.outputs.live_cidr_block
-}
-
 module "sg" {
   source = "../../modules/security-groups"
   vpc_id = module.staging_vpc.id
@@ -67,7 +57,12 @@ module "lt" {
   instance_type               = var.instance_type
   key_name                    = var.key_name
   security_groups             = [module.sg.ec2_sg_id]
+  user_data                   = filebase64("${path.module}/userdata.sh")
   associate_public_ip_address = true
+  instance_tags = {
+    Name = var.app_name
+    Env = "staging"
+  }
 }
 
 
@@ -82,6 +77,8 @@ module "asg" {
   launch_template_id      = module.lt.launch_template_id
   launch_template_version = "$Latest"
   instance_name_tag       = "${var.app_name}-terra"
+    health_check_grace_period = 300
+  health_check_type = "ELB"
 }
 
 module "bastion" {
