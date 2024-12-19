@@ -1,15 +1,16 @@
-provider "aws" {
-  region = var.region
-}
-
+# Need to explicitly add the variables because it runs, before everything else
 terraform {
   backend "s3" {
     bucket         = "terraform-template-state-bucket"
     key            = "live/terraform.tfstate"
-    region         = "ap-southeast-1"
+    region         = "us-east-1"
     dynamodb_table = "terraform-lock"
     encrypt        = true
   }
+}
+
+provider "aws" {
+  region = var.region
 }
 
 module "live_vpc" {

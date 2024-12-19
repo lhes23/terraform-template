@@ -1,6 +1,7 @@
 variable "region" {
   type        = string
   description = "Region of the Infrastructure"
+  default = "us-east-1"
 }
 
 variable "vpc_az" {

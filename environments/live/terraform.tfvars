@@ -1,6 +1,6 @@
 app_name         = "TF-Live"
-region           = "ap-southeast-1"
-vpc_az           = ["ap-southeast-1a", "ap-southeast-1b"]
+region           = "us-east-1"
+vpc_az           = ["us-east-1a", "us-east-1b"]
 image_id         = "ami-01811d4912b4ccb26" # ubuntu
 instance_type    = "t2.micro"
 key_name         = "llr-keypair"
