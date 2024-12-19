@@ -1,10 +1,10 @@
-# Need to explicitly add the variables because it runs, before everything else
+# Need to explicitly add the variables because it runs before everything else
 terraform {
   backend "s3" {
-    bucket         = "terraform-template-state-bucket"
+    bucket         = "terraform-template-state-bucket" # name must be the same from the state-backend bucket name
     key            = "live/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "terraform-lock"
+    dynamodb_table = "terra-dynamodb-table" # name must be the same from the state-backend dynamodb table name
     encrypt        = true
   }
 }
@@ -51,6 +51,18 @@ resource "aws_lb_listener" "http_listener" {
   }
 }
 
+resource "aws_lb_listener" "http_listener" {
+  load_balancer_arn = module.alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = var.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = module.tg.arn
+  }
+}
+
 module "lt" {
   source                      = "../../modules/launch-template"
   lt_name                     = "${var.app_name}-lt"
@@ -66,7 +78,7 @@ module "lt" {
 }
 
 module "asg" {
-  source                    = "../../modules/auto-scaling-group"
+  source                    = "../../modules/autoscaling-group"
   asg_name                  = "${var.app_name}-asg"
   max_size                  = var.max_size
   desired_capacity          = var.desired_capacity

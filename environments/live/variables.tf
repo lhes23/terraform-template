@@ -1,7 +1,7 @@
 variable "region" {
   type        = string
   description = "Region of the Infrastructure"
-  default = "us-east-1"
+  default     = "us-east-1"
 }
 
 variable "vpc_az" {
@@ -50,4 +50,9 @@ variable "min_size" {
 variable "desired_capacity" {
   type        = number
   description = "Desired capacity number of instance"
+}
+
+variable "certificate_arn" {
+  type        = string
+  description = "The name of the certificate in the certificate manager for load balancer"
 }
