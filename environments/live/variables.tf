@@ -56,3 +56,8 @@ variable "certificate_arn" {
   type        = string
   description = "The name of the certificate in the certificate manager for load balancer"
 }
+
+variable "environment" {
+  type        = string
+  description = "The environment of the application"
+}

@@ -1,11 +1,13 @@
-app_name         = "TF-Live"
+app_name         = "terra-app"
 region           = "us-east-1"
 vpc_az           = ["us-east-1a", "us-east-1b"]
-image_id         = "ami-01811d4912b4ccb26" # ubuntu
-instance_type    = "t2.micro"
-key_name         = "llr-keypair"
+image_id         = "ami-0e2c8caa4b6378d8c" # ubuntu
+instance_type    = "t3.micro"
+key_name         = "ec2-users-key-us-east"
 ssh_private_key  = "value"
 cidr_block       = "10.1.0.0/16"
 max_size         = 3
 min_size         = 1
 desired_capacity = 1
+environment      = "live"
+certificate_arn  = "arn:aws:acm:us-east-1:203352749099:certificate/e7536a34-840e-43e1-8539-ad15a7183f47"

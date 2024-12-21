@@ -2,8 +2,9 @@ provider "aws" {
   region = var.region
 }
 
-module "live_vpc" {
+module "vpc" {
   source     = "../../modules/vpc"
+  vpc_name   = "${var.app_name}-${var.environment}"
   region     = var.region
   vpc_az     = var.vpc_az
   cidr_block = var.cidr_block
@@ -11,13 +12,13 @@ module "live_vpc" {
 
 module "sg" {
   source = "../../modules/security-groups"
-  vpc_id = module.live_vpc.id
+  vpc_id = module.vpc.id
 }
 
 module "tg" {
   source   = "../../modules/target-groups"
   app_name = var.app_name
-  vpc_id   = module.live_vpc.id
+  vpc_id   = module.vpc.id
 }
 
 
@@ -26,10 +27,10 @@ module "alb" {
   lb_name            = "${var.app_name}-alb"
   load_balancer_type = "application"
   lb_sg_ids          = [module.sg.lb_sg_id]
-  lb_subnets         = module.live_vpc.public_subnet_ids
+  lb_subnets         = module.vpc.public_subnet_ids
 }
 
-resource "aws_lb_listener" "http_listener" {
+resource "aws_lb_listener" "http_80" {
   load_balancer_arn = module.alb.arn
   port              = 80
   protocol          = "HTTP"
@@ -40,7 +41,7 @@ resource "aws_lb_listener" "http_listener" {
   }
 }
 
-resource "aws_lb_listener" "http_listener" {
+resource "aws_lb_listener" "http_443" {
   load_balancer_arn = module.alb.arn
   port              = 443
   protocol          = "HTTPS"
@@ -62,7 +63,8 @@ module "lt" {
   user_data                   = filebase64("${path.module}/userdata.sh")
   associate_public_ip_address = true
   instance_tags = {
-    ScheduleShutdown = "True"
+    Name = var.app_name
+    Env  = var.environment
   }
 }
 
@@ -72,11 +74,11 @@ module "asg" {
   max_size                  = var.max_size
   desired_capacity          = var.desired_capacity
   min_size                  = var.min_size
-  vpc_zone_identifier       = module.live_vpc.public_subnet_ids
+  vpc_zone_identifier       = module.vpc.public_subnet_ids
   target_group_arns         = [module.tg.arn]
   launch_template_id        = module.lt.launch_template_id
   launch_template_version   = "$Latest"
-  instance_name_tag         = "${var.app_name}-terra"
+  instance_name_tag         = "${var.app_name}-${var.environment}-server"
   health_check_type         = "ELB"
   health_check_grace_period = 300
 }

@@ -1,7 +1,7 @@
 resource "aws_vpc" "vpc" {
   cidr_block = var.cidr_block
   tags = {
-    Name = "vpc"
+    Name = "${var.vpc_name}-vpc"
   }
 }
 

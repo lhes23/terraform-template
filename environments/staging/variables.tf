@@ -50,3 +50,8 @@ variable "desired_capacity" {
   type        = number
   description = "Desired capacity number of instance"
 }
+
+variable "environment" {
+  type        = string
+  description = "The environment of the application"
+}
