@@ -9,3 +9,7 @@ output "live_vpc_cidr" {
 output "live_route_table_id" {
   value = module.live_vpc.route_table_id
 }
+
+output "alb_dns_name" {
+  value = module.alb.dns_name
+}
